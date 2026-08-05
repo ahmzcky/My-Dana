@@ -3,156 +3,439 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gen-Mu | Smart Fikih untuk GenMu</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Budget Hub - Pencatat Keuangan</title>
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --success: #10B981;
+            --danger: #EF4444;
+            --dark: #111827;
+            --light: #F3F4F6;
+            --white: #FFFFFF;
+            --border: #E5E7EB;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background-color: var(--dark);
+            color: var(--white);
+            padding: 25px 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar h2 {
+            margin-bottom: 35px;
+            text-align: center;
+            font-size: 24px;
+            color: var(--primary);
+            letter-spacing: 1px;
+        }
+
+        .menu-item {
+            padding: 12px 15px;
+            margin-bottom: 12px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: 500;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            background-color: var(--primary);
+        }
+
+        .menu-add {
+            margin-top: auto;
+            background-color: transparent;
+            border: 2px dashed rgba(255, 255, 255, 0.4);
+            text-align: center;
+        }
+
+        .menu-add:hover {
+            border-color: var(--white);
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background-color: var(--white);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            border: 1px solid var(--border);
+        }
+
+        .card h3 {
+            font-size: 14px;
+            color: #6B7280;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card h2 {
+            font-size: 28px;
+            color: var(--dark);
+        }
+
+        .card.income h2 { color: var(--success); }
+        .card.expense h2 { color: var(--danger); }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 25px;
+        }
+
+        @media (max-width: 900px) {
+            body { flex-direction: column; }
+            .sidebar { width: 100%; min-height: auto; }
+            .content-grid { grid-template-columns: 1fr; }
+        }
+
+        .form-container, .table-container {
+            background-color: var(--white);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            border: 1px solid var(--border);
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--dark);
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        button.btn-submit {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 15px;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        button.btn-submit:hover {
+            background-color: #4338CA;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        th {
+            background-color: var(--light);
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .text-income { color: var(--success); font-weight: 600; }
+        .text-expense { color: var(--danger); font-weight: 600; }
+
+        .delete-btn {
+            background-color: #FEE2E2;
+            color: var(--danger);
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .delete-btn:hover {
+            background-color: var(--danger);
+            color: var(--white);
+        }
+
+        .empty-row {
+            text-align: center;
+            color: #6B7280;
+            padding: 20px;
+        }
+    </style>
 </head>
 <body>
 
-    <nav class="navbar fade-in">
-        <div class="logo">Gen-Mu</div>
-        <div class="hamburger" id="hamburger">
-            <span></span>
-            <span></span>
-            <span></span>
+    <div class="sidebar">
+        <h2>Budget Hub</h2>
+        <div class="menu-item active">Beranda / Dashboard</div>
+        <div class="menu-item">Laporan Bulanan</div>
+        <div class="menu-item menu-add" onclick="alert('Struktur menu ini sudah siap untuk dihubungkan dengan halaman baru!')">
+            + Tambah Menu Lain
         </div>
-        <ul class="nav-links" id="nav-links">
-            <li><a href="#hero">Beranda</a></li>
-            <li><a href="#masalah">Masalah</a></li>
-            <li><a href="#solusi">Solusi</a></li>
-            <li><a href="#fitur">Fitur</a></li>
-            <li><a href="#akses">Akses</a></li>
-            <li><a href="#tim">Tim</a></li>
-        </ul>
-    </nav>
+    </div>
 
-    <section id="hero" class="hero fade-in">
-        <div class="hero-content">
-            <h1>Gen-Mu</h1>
-            <h2>Smart Fikih untuk GenMu</h2>
-            <p>Gen-Mu adalah aplikasi pembelajaran Fikih berbasis Android yang dirancang untuk membantu siswa Madrasah Ibtidaiyah belajar dan memahami materi fikih seperti thaharah, sholat, zakat, qurban, haji, serta muamalah secara mandiri. Aplikasi ini hadir sebagai pelengkap pembelajaran di kelas, sehingga siswa dapat mengulang materi dan berlatih kapan saja. Konten mengacu pada kurikulum PAI Kementerian Agama RI untuk jenjang MI.</p>
-            <a href="#akses" class="btn btn-primary">Coba Sekarang</a>
-        </div>
-        <div class="hero-image">
-            <img src="https://i.ibb.co.com/1fDVcxxZ/Mockup-1.png" alt="Gambar Hero Aplikasi Gen-Mu">
-        </div>
-    </section>
-
-    <section id="masalah" class="masalah fade-in">
-        <h2 class="section-title">Kurangnya Media Pembelajaran Fikih yang Interaktif di MI</h2>
-        <p class="section-subtitle">Pembelajaran fikih di Madrasah Ibtidaiyah masih didominasi metode konvensional yang kurang menarik bagi siswa.</p>
-        
-        <div class="card-container">
+    <div class="main-content">
+        <div class="dashboard-cards">
             <div class="card">
-                <h3>Keterbatasan Media</h3>
-                <p>Media pembelajaran yang digunakan masih terbatas pada buku teks dan ceramah.</p>
+                <h3>Total Saldo Saat Ini</h3>
+                <h2 id="total-balance">Rp 0</h2>
             </div>
-            <div class="card">
-                <h3>Kurang Konkret</h3>
-                <p>Kurangnya media interaktif yang membantu siswa memahami praktik ibadah secara konkret.</p>
+            <div class="card income">
+                <h3>Total Pemasukan</h3>
+                <h2 id="total-income">Rp 0</h2>
             </div>
-            <div class="card">
-                <h3>Sulit Belajar Mandiri</h3>
-                <p>Siswa kesulitan mengulang materi dan belajar mandiri di luar kelas.</p>
+            <div class="card expense">
+                <h3>Total Pengeluaran</h3>
+                <h2 id="total-expense">Rp 0</h2>
             </div>
         </div>
-        <div class="target-pengguna">
-            <strong>Target Pengguna:</strong> Siswa Madrasah Ibtidaiyah (kelas 1–6) usia 7–12 tahun serta guru PAI sebagai pendukung pembelajaran.
-        </div>
-    </section>
 
-    <section id="solusi" class="solusi fade-in">
-        <div class="solusi-content">
-            <h2 class="section-title left-align">Gen-Mu: Aplikasi Pembelajaran Fikih Interaktif Berbasis Android</h2>
-            <p>Gen-Mu dirancang untuk membantu siswa MI memahami materi fikih secara lebih menarik, interaktif, dan fleksibel melalui media digital.</p>
-            
-            <h3>Cara Kerja Singkat:</h3>
-            <p>Buka aplikasi → pilih menu → pelajari materi via video & ringkasan → kerjakan game/kuis → dapatkan poin progres.</p>
-            
-            <h3>Manfaat:</h3>
-            <ul>
-                <li>Membantu siswa memahami materi fikih dengan lebih mudah dan menyenangkan.</li>
-                <li>Meningkatkan motivasi belajar melalui fitur game dan sistem poin.</li>
-                <li>Memudahkan siswa belajar kapan saja dan di mana saja.</li>
-            </ul>
-        </div>
-        <div class="solusi-image">
-            <img src="https://i.ibb.co.com/7tyzKcLX/Mockup.png" alt="Tampilan aplikasi Gen-Mu">
-        </div>
-    </section>
+        <div class="content-grid">
+            <div class="form-container">
+                <h3 style="margin-bottom: 20px; font-size: 18px; color: #111827;">Catat Transaksi</h3>
+                <form id="transaction-form">
+                    <div class="form-group">
+                        <label>Tipe Transaksi</label>
+                        <select id="type" required>
+                            <option value="expense" selected>Pengeluaran</option>
+                            <option value="income">Pemasukan</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Kategori</label>
+                        <select id="category" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Nominal (Rp)</label>
+                        <input type="number" id="amount" placeholder="Contoh: 25000" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Tanggal</label>
+                        <input type="date" id="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Keterangan</label>
+                        <input type="text" id="description" placeholder="Contoh: Beli es teh, top-up GoPay..." required>
+                    </div>
+                    <button type="submit" class="btn-submit">Simpan Transaksi</button>
+                </form>
+            </div>
 
-    <section id="fitur" class="fitur fade-in">
-        <h2 class="section-title">Fitur Gen-Mu</h2>
-        <p class="section-subtitle">Gen-Mu menyediakan fitur pembelajaran fikih interaktif yang sesuai kurikulum MI.</p>
-        
-        <div class="grid-container">
-            <div class="card">
-                <h3>Belajar</h3>
-                <p>Menyajikan materi fikih seperti thaharah, shalat, puasa, zakat, dalam bentuk ringkasan, video, dan audio.</p>
-            </div>
-            <div class="card">
-                <h3>Game Edukasi</h3>
-                <p>Menyediakan kuis dan permainan interaktif untuk menguji pemahaman siswa.</p>
-            </div>
-            <div class="card">
-                <h3>Ibadahku</h3>
-                <p>Berisi pengingat ibadah, doa harian, serta pembiasaan amalan sehari-hari.</p>
-            </div>
-            <div class="card">
-                <h3>Progres & Reward</h3>
-                <p>Menampilkan perkembangan belajar siswa serta sistem poin dan badge.</p>
-            </div>
-        </div>
-    </section>
-
-    <section id="akses" class="akses fade-in">
-        <h2 class="section-title">Akses Aplikasi Gen-Mu</h2>
-        <p>Aplikasi Gen-Mu dapat diakses melalui perangkat Android sebagai media pembelajaran fikih interaktif.</p>
-        <div class="btn-group">
-            <a href="belajar.html" class="btn btn-primary">Buka Halaman Pembelajaran</a>
-            <a href="#" class="btn btn-secondary">Unduh Aplikasi</a>
-        </div>
-    </section>
-
-    <section id="tim" class="tim fade-in">
-        <h2 class="section-title">Tim Pengembang: An-Naba</h2>
-        <p class="section-subtitle">Tim pengembang aplikasi edukasi yang berfokus pada inovasi pembelajaran Pendidikan Agama Islam berbasis digital.</p>
-        
-        <div class="team-container">
-            <div class="team-card">
-                <img src="https://i.ibb.co.com/bgSdx4kd/Gambar-Whats-App-2025-11-27-pukul-20-53-47-1bafa72e-1.jpg" alt="Photo Profil Talitha">
-                <h3>Talitha Luthfiana Fikry</h3>
-                <p>Koordinator Pengembangan</p>
-            </div>
-            <div class="team-card">
-                <img src="https://i.ibb.co.com/99Jbgrx2/Whats-App-Image-2026-04-27-at-07-52-18.jpg" alt="Photo Profil Zackiy">
-                <h3>Ahmad Zackiy</h3>
-                <p>Desainer UI/UX</p>
-            </div>
-            <div class="team-card">
-                <img src="https://i.ibb.co.com/6R9L8zCX/Whats-App-Image-2026-04-27-at-07-54-19.jpg" alt="Photo Profil Agil">
-                <h3>Agil Salsa Nabila</h3>
-                <p>Perancang Game Edukasi</p>
-            </div>
-            <div class="team-card">
-                <img src="https://i.ibb.co.com/KxWQjw3b/Whats-App-Image-2026-04-20-at-08-06-09.jpg" alt="Photo Profil Fatsa">
-                <h3>Fathun Nissa’</h3>
-                <p>Penyusun Konten Materi</p>
-            </div>
-            <div class="team-card">
-                <img src="https://i.ibb.co.com/0yjbb5KD/Whats-App-Image-2026-04-20-at-08-09-34-1.jpg" alt="Photo Profil Adhi Faiz">
-                <h3>Adhi Faiz Fadillah</h3>
-                <p>Perancang Konsep Aplikasi</p>
+            <div class="table-container">
+                <h3 style="margin-bottom: 20px; font-size: 18px; color: #111827;">Riwayat Transaksi Terakhir</h3>
+                <div style="overflow-x:auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tanggal</th>
+                                <th>Kategori</th>
+                                <th>Keterangan</th>
+                                <th>Nominal</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transaction-list"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
-    </section>
+    </div>
 
-    <footer>
-        <p><strong>Kelompok An-naba</strong></p>
-        <p>Kelas A, Pendidikan Agama Islam</p>
-        <p>Universitas Muhammadiyah Yogyakarta</p>
-        <p>&copy; 2026 Aplikasi Gen-Mu.</p>
-    </footer>
+    <script>
+        let transactions = JSON.parse(localStorage.getItem('budget_transactions')) || [];
 
-    <script src="script.js"></script>
+        const form = document.getElementById('transaction-form');
+        const transactionList = document.getElementById('transaction-list');
+        const balanceEl = document.getElementById('total-balance');
+        const incomeEl = document.getElementById('total-income');
+        const expenseEl = document.getElementById('total-expense');
+        const dateInput = document.getElementById('date');
+        const typeInput = document.getElementById('type');
+        const categoryInput = document.getElementById('category');
+
+        const categoryOptions = {
+            expense: [
+                'Makanan',
+                'Minuman',
+                'Transportasi',
+                'E-Wallet',
+                'Lainnya'
+            ],
+            income: [
+                'Uang Saku / Gaji',
+                'Bonus',
+                'Lainnya'
+            ]
+        };
+
+        dateInput.value = new Date().toISOString().split('T')[0];
+
+        function formatRupiah(number) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            }).format(number);
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            const date = new Date(dateString);
+            return new Intl.DateTimeFormat('id-ID', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            }).format(date);
+        }
+
+        function renderCategories() {
+            const type = typeInput.value;
+            categoryInput.innerHTML = categoryOptions[type]
+                .map(category => `<option value="${category}">${category}</option>`)
+                .join('');
+        }
+
+        function updateUI() {
+            const income = transactions
+                .filter(item => item.type === 'income')
+                .reduce((acc, item) => acc + item.amount, 0);
+
+            const expense = transactions
+                .filter(item => item.type === 'expense')
+                .reduce((acc, item) => acc + item.amount, 0);
+
+            const balance = income - expense;
+
+            balanceEl.innerText = formatRupiah(balance);
+            incomeEl.innerText = formatRupiah(income);
+            expenseEl.innerText = formatRupiah(expense);
+
+            transactionList.innerHTML = '';
+
+            if (transactions.length === 0) {
+                transactionList.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="empty-row">Belum ada transaksi</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            transactions.forEach(transaction => {
+                const tr = document.createElement('tr');
+
+                const textClass = transaction.type === 'income' ? 'text-income' : 'text-expense';
+                const sign = transaction.type === 'income' ? '+' : '-';
+
+                tr.innerHTML = `
+                    <td>${formatDate(transaction.date)}</td>
+                    <td>${transaction.category}</td>
+                    <td>${transaction.description}</td>
+                    <td class="${textClass}">${sign} ${formatRupiah(transaction.amount)}</td>
+                    <td><button class="delete-btn" onclick="deleteTransaction(${transaction.id})">Hapus</button></td>
+                `;
+
+                transactionList.appendChild(tr);
+            });
+        }
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const type = typeInput.value;
+            const category = categoryInput.value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            const date = document.getElementById('date').value;
+            const description = document.getElementById('description').value;
+
+            if (isNaN(amount) || amount <= 0) {
+                alert("Nominal yang dimasukkan harus lebih dari 0!");
+                return;
+            }
+
+            const transaction = {
+                id: Date.now(),
+                type,
+                category,
+                amount,
+                date,
+                description
+            };
+
+            transactions.push(transaction);
+            localStorage.setItem('budget_transactions', JSON.stringify(transactions));
+
+            form.reset();
+            dateInput.value = new Date().toISOString().split('T')[0];
+            renderCategories();
+            updateUI();
+        });
+
+        function deleteTransaction(id) {
+            transactions = transactions.filter(transaction => transaction.id !== id);
+            localStorage.setItem('budget_transactions', JSON.stringify(transactions));
+            updateUI();
+        }
+
+        typeInput.addEventListener('change', renderCategories);
+
+        renderCategories();
+        updateUI();
+    </script>
 </body>
 </html>
